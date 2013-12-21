@@ -39,15 +39,64 @@ public class SnakeShow : MonoBehaviour {
 	public tk2dSprite spriteHead;
 	public tk2dSprite spriteBody;
 	public tk2dSprite spriteTail;
-	public tk2dSprite spriteTurnLeftUp_RightDown;
-	public tk2dSprite spriteTurnLeftDown_RightUp;
+	public tk2dSprite spriteTurnLeftUp;
+	public tk2dSprite spriteTurnLeftDown;
+	public tk2dSprite spriteTurnRightUp;
+	public tk2dSprite spriteTurnRightDown;
 	
 	//Direction NextDirection;
 	public float lastMovingTime = 0.0f;
 	
 	void AddSprite(int LinkIndex, tk2dSprite sprite)
 	{
+		Direction d = Direction.Right;
+		if (LinkIndex == 0) //head
+		{
+			if (Links[0].x - Links[1].x != 0) //if horizontal
+				d = (Links[0].x - Links[1].x > 0) ? Direction.Right : Direction.Left;
+			else
+				d = (Links[0].y - Links[1].y > 0) ? Direction.Up : Direction.Down;
+		}
+		else
+		{
+			if (LinkIndex == CurrentLength-1) //tail
+			{
+				if (Links[LinkIndex].x - Links[LinkIndex-1].x != 0) //if horizontal
+					d = (Links[LinkIndex].x - Links[LinkIndex-1].x > 0) ? Direction.Left : Direction.Right;
+				else
+					d = (Links[LinkIndex].y - Links[LinkIndex-1].y > 0) ? Direction.Down : Direction.Up;
+			}
+			else
+			{
+				if (!((Links[LinkIndex-1].x - Links[LinkIndex+1].x != 0)&&(Links[LinkIndex-1].y - Links[LinkIndex+1].y != 0))) //if not turn
+				{
+					if(Links[LinkIndex-1].x - Links[LinkIndex+1].x == 0) //if vertical
+					{
+						d = Direction.Up;
+					}
+				}
+			}
+		}
+
 		tk2dSprite tmp = Instantiate(sprite, tilemap.GetTilePosition(Links[LinkIndex].x, Links[LinkIndex].y)+new Vector3(tilemap.height, tilemap.height, 0), tilemap.transform.rotation) as tk2dSprite;
+		//float yRotation = 90.0f;
+		//tmp.transform.EulerAngles = new Vector3(tmp.transform.eulerAngles.x, yRotation, tmp.transform.eulerAngles.z);
+		//tmp.transform.eulerAngles = new Vector3(tmp.transform.eulerAngles.x, tmp.transform.eulerAngles.y, tmp.transform.eulerAngles.z);
+		//tmp.transform.rotation = Quaternion.Euler(tmp.transform.eulerAngles.x, 90, tmp.transform.eulerAngles.z);
+		//rotation *= Quaternion.Euler(0, 90, 0);
+		//tmp.transform.localEulerAngles = new Vector3( 0, 90, 0 );
+			switch (d)
+			{
+				case Direction.Up:
+					tmp.transform.eulerAngles = new Vector3(0, 0, Mathf.Atan2(1, 0) * Mathf.Rad2Deg);
+					break;
+				case Direction.Left:
+					tmp.transform.eulerAngles = new Vector3(0, 0, Mathf.Atan2(0, -1) * Mathf.Rad2Deg);
+					break;
+				case Direction.Down:
+					tmp.transform.eulerAngles = new Vector3(0, 0, Mathf.Atan2(-1, 0) * Mathf.Rad2Deg);
+					break;
+			}
 		Sprites.Add(tmp.gameObject);
 	}
 	
@@ -85,9 +134,19 @@ public class SnakeShow : MonoBehaviour {
 			if ((Links[i-1].x - Links[i+1].x != 0)&&(Links[i-1].y - Links[i+1].y != 0)) //if turn
 			{
 				if ((Links[i-1].x - Links[i+1].x > 0)^(Links[i-1].y - Links[i+1].y > 0))
-					AddSprite(i, spriteTurnLeftDown_RightUp);
+				{
+					if ((Links[i].x - Links[i-1].x > 0)||(Links[i].x - Links[i+1].x > 0))//if one neighbor on the left
+						AddSprite(i, spriteTurnLeftDown);
+					else
+						AddSprite(i, spriteTurnRightUp);
+				}	
 				else
-					AddSprite(i, spriteTurnLeftUp_RightDown);
+				{
+					if ((Links[i].x - Links[i-1].x > 0)||(Links[i].x - Links[i+1].x > 0))//if one neighbor on the left
+						AddSprite(i, spriteTurnLeftUp);
+					else
+						AddSprite(i, spriteTurnRightDown);
+				}
 			}
 			else
 				AddSprite(i, spriteBody);
