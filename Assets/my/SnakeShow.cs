@@ -42,82 +42,82 @@ public class SnakeShow : MonoBehaviour {
 	public tk2dSprite spriteTurnLeftUp_RightDown;
 	public tk2dSprite spriteTurnLeftDown_RightUp;
 	
-	Direction NextDirection;
+	//Direction NextDirection;
 	public float lastMovingTime = 0.0f;
-
-	public SnakeShow()
-	{
-		CurrentDirection = PreviousDirection = Direction.Right;
 	
-		//CurrentState = SnakeState.Sleep;
-		CurrentState = SnakeState.Moving;
-		Links = new List<SnakeLink>();
-		SnakeLink uc;
-		uc.y = 0;
-		for (uc.x = InitialLength-1; uc.x >= 0; uc.x--)
-			Links.Add(uc);
+	void AddSprite(int LinkIndex, tk2dSprite sprite)
+	{
+		tk2dSprite tmp = Instantiate(sprite, tilemap.GetTilePosition(Links[LinkIndex].x, Links[LinkIndex].y)+new Vector3(tilemap.height, tilemap.height, 0), tilemap.transform.rotation) as tk2dSprite;
+		Sprites.Add(tmp.gameObject);
+	}
+	
+	void InsertSprite(int position, int LinkIndex, tk2dSprite sprite)
+	{
+		//tk2dSprite tmp = Instantiate(sprite, tilemap.GetTilePosition(Links[LinkIndex].x, Links[LinkIndex].y)+new Vector3(tilemap.height, tilemap.height, 0), tilemap.transform.rotation) as tk2dSprite;
+		//Sprites.Add(tmp.gameObject);
+	}
+	
+	void ShowNewDiscretePosition()
+	{
+		foreach (GameObject go in Sprites)
+			Destroy(go);
+		GenerateSnakeSprites();
 	}
 
 	// Use this for initialization
 	void Start () {
-		//filling initial sprites list
+		Links = new List<SnakeLink>();
+		SnakeLink uc;
+		uc.y = 1;
+		for (uc.x = InitialLength; uc.x >= 1; uc.x--)
+			Links.Add(uc);
+		GenerateSnakeSprites();
+		CurrentState = SnakeState.Sleep;
+		CurrentDirection = PreviousDirection = Direction.Right;
+	}
+	
+	void GenerateSnakeSprites()
+	{
 		Sprites = new List<GameObject>();
-		Sprites.Add(Instantiate(spriteHead, tilemap.GetTilePosition(Links[0].x, Links[0].y)+new Vector3(tilemap.height, tilemap.height, 0), tilemap.transform.rotation) as GameObject);
-		NextDirection = CurrentDirection;
-
+		AddSprite(0, spriteHead);
 		for (int i = 1; i < CurrentLength-1; i++)
 		{
 			if ((Links[i-1].x - Links[i+1].x != 0)&&(Links[i-1].y - Links[i+1].y != 0)) //if turn
 			{
 				if ((Links[i-1].x - Links[i+1].x > 0)^(Links[i-1].y - Links[i+1].y > 0))
-					Sprites.Add(Instantiate(spriteTurnLeftDown_RightUp, tilemap.GetTilePosition(Links[i].x, Links[i].y)+new Vector3(tilemap.height, tilemap.height, 0), tilemap.transform.rotation) as GameObject);
+					AddSprite(i, spriteTurnLeftDown_RightUp);
 				else
-					Sprites.Add(Instantiate(spriteTurnLeftUp_RightDown, tilemap.GetTilePosition(Links[i].x, Links[i].y)+new Vector3(tilemap.height, tilemap.height, 0), tilemap.transform.rotation) as GameObject);
+					AddSprite(i, spriteTurnLeftUp_RightDown);
 			}
 			else
-				Sprites.Add(Instantiate(spriteBody, tilemap.GetTilePosition(Links[i].x, Links[i].y)+new Vector3(tilemap.height, tilemap.height, 0), tilemap.transform.rotation) as GameObject);
+				AddSprite(i, spriteBody);
 		}
-		Sprites.Add(Instantiate(spriteTail, tilemap.GetTilePosition(Links[CurrentLength-1].x, Links[CurrentLength-1].y)+new Vector3(tilemap.height, tilemap.height, 0), tilemap.transform.rotation) as GameObject);
+		AddSprite(CurrentLength-1, spriteTail);
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		//if (mySnake.CurrentState != SnakeState.Death)
+		if (CurrentState != SnakeState.Death)
 		{
-			//tilemap.SetTile(mySnake.Links[0].x, mySnake.Links[0].y, 0, tmIndexHead);
-
-			/*for (int i = 1; i < mySnake.CurrentLength-1; i++)
-			{
-				if ((mySnake.Links[i-1].x-mySnake.Links[i+1].x!=0)&&(mySnake.Links[i-1].y-mySnake.Links[i+1].y!=0)) //if turn
+			if ((Input.anyKeyDown)&&(CurrentState == SnakeState.Sleep))
+				CurrentState = SnakeState.Moving;
+				
+			if (Input.GetKey(KeyCode.UpArrow)||Input.GetKey(KeyCode.W))
+				CurrentDirection = Direction.Up;
+			if (Input.GetKey(KeyCode.DownArrow)||Input.GetKey(KeyCode.S))
+				CurrentDirection = Direction.Down;
+			if (Input.GetKey(KeyCode.LeftArrow)||Input.GetKey(KeyCode.A))
+				CurrentDirection = Direction.Left;
+			if (Input.GetKey(KeyCode.RightArrow)||Input.GetKey(KeyCode.D))
+				CurrentDirection = Direction.Right;
+			
+			if (CurrentState == SnakeState.Moving)
+				if (Time.time > lastMovingTime + 0.5f)
 				{
-					if ((mySnake.Links[i-1].x-mySnake.Links[i+1].x>0)^(mySnake.Links[i-1].y-mySnake.Links[i+1].y>0))
-						tilemap.SetTile(mySnake.Links[i].x, mySnake.Links[i].y, 0, tmIndexTurnLeftDown_RightUp);
-					else
-						tilemap.SetTile(mySnake.Links[i].x, mySnake.Links[i].y, 0, tmIndexTurnLeftUp_RightDown);
+					Move();
+					lastMovingTime = Time.time;
 				}
-				else
-					tilemap.SetTile(mySnake.Links[i].x, mySnake.Links[i].y, 0, tmIndexBody);
-			}
-			tilemap.SetTile(mySnake.Links[mySnake.CurrentLength-1].x, mySnake.Links[mySnake.CurrentLength-1].y, 0, tmIndexTail);
-			tilemap.Build();*/
 		}
-		//if ((Input.anyKeyDown)&&(mySnake.CurrentState == SnakeState.Sleep))
-		//	mySnake.CurrentState = SnakeState.Moving;
-		//if (Input.GetKey(KeyCode.UpArrow)||Input.GetKey(KeyCode.W))
-		//	mySnake.CurrentDirection = Direction.Up;
-		//if (Input.GetKey(KeyCode.DownArrow)||Input.GetKey(KeyCode.S))
-		//	mySnake.CurrentDirection = Direction.Down;
-		//if (Input.GetKey(KeyCode.LeftArrow)||Input.GetKey(KeyCode.A))
-		//	mySnake.CurrentDirection = Direction.Left;
-		//if (Input.GetKey(KeyCode.RightArrow)||Input.GetKey(KeyCode.D))
-		//	mySnake.CurrentDirection = Direction.Right;
-		
-		//if (Time.time > lastMovingTime + 0.5f)
-		//{
-			//tilemap.ClearTile(mySnake.Links[mySnake.Links.Count-1].x, mySnake.Links[mySnake.Links.Count-1].y, 0);
-			//mySnake.Move();
-			//lastMovingTime = Time.time;	
-		//}
 	}
 	
 	public void Move()
@@ -142,5 +142,7 @@ public class SnakeShow : MonoBehaviour {
 				break;
 		}
 		PreviousDirection = CurrentDirection;
+		
+		ShowNewDiscretePosition();
 	}
 }
