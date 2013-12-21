@@ -2,31 +2,43 @@
 using System.Collections;
 using System.Collections.Generic;
 
-enum SnakeState
+public enum SnakeState
 {
 	Sleep, Moving, Death
 }
 
-enum Direction
+public enum Direction
 {
 	Up = 1, Down = 2, Left = 0, Right = 3
 }
 
-struct UnitCoords
+public struct SnakeLink
 {
 	public int x;
 	public int y;
-	public UnitCoords(int xi, int yi) 
+	public SnakeLink(int xi, int yi) 
 	{
       this.x = xi;
       this.y = yi;
 	}
 }
 
-class Snake
+public struct SnakeSprite
+{
+	public Vector3 position;
+	public tk2dSprite sprite;
+	//public GameObject obj;
+	public SnakeSprite(Vector3 pos, tk2dSprite sp)
+	{
+		position = pos;
+		sprite = sp;
+	}
+}
+
+public class Snake
 {
 	const int InitialLength = 5;
-	public List<UnitCoords> UnitList;
+	public List<SnakeLink> Links;
 	public Direction CurrentDirection;
 	public Direction PreviousDirection;
 	public int CurrentLength = InitialLength;
@@ -38,11 +50,11 @@ class Snake
 	
 		//CurrentState = SnakeState.Sleep;
 		CurrentState = SnakeState.Moving;
-		UnitList = new List<UnitCoords>();
-		UnitCoords uc;
+		Links = new List<SnakeLink>();
+		SnakeLink uc;
 		uc.y = 0;
 		for (uc.x = InitialLength-1; uc.x >= 0; uc.x--)
-			UnitList.Add(uc);
+			Links.Add(uc);
 	}
 	
 	public void Move()
@@ -50,20 +62,20 @@ class Snake
 		if ((int)PreviousDirection + (int)CurrentDirection == 3) // check for opposite direction
 			CurrentDirection = PreviousDirection;
 		
-		UnitList.RemoveAt(UnitList.Count-1); //remove tail
+		Links.RemoveAt(Links.Count-1); //remove tail
 		switch (CurrentDirection)		
 		{
 			case Direction.Right:
-				UnitList.Insert(0, new UnitCoords(UnitList[0].x+1, UnitList[0].y));
+				Links.Insert(0, new SnakeLink(Links[0].x+1, Links[0].y));
 				break;
 			case Direction.Left:
-				UnitList.Insert(0, new UnitCoords(UnitList[0].x-1, UnitList[0].y));
+				Links.Insert(0, new SnakeLink(Links[0].x-1, Links[0].y));
 				break;
 			case Direction.Up:
-				UnitList.Insert(0, new UnitCoords(UnitList[0].x, UnitList[0].y+1));
+				Links.Insert(0, new SnakeLink(Links[0].x, Links[0].y+1));
 				break;
 			case Direction.Down:
-				UnitList.Insert(0, new UnitCoords(UnitList[0].x, UnitList[0].y-1));
+				Links.Insert(0, new SnakeLink(Links[0].x, Links[0].y-1));
 				break;
 		}
 		PreviousDirection = CurrentDirection;
@@ -74,12 +86,19 @@ public class SnakeShow : MonoBehaviour {
 	
 	Snake mySnake;
 	public tk2dTileMap tilemap;
-	public tk2dSpriteCollection SnakeSprites;
-	int tmIndexBody = 1;
-	int tmIndexHead = 2;
-	int tmIndexTail = 3;
-	int tmIndexTurnLeftUp_RightDown = 5;
-	int tmIndexTurnLeftDown_RightUp = 4;
+	//public tk2dSpriteCollection SnakeSprites;
+	//int tmIndexBody = 1;
+	//int tmIndexHead = 2;
+	//int tmIndexTail = 3;
+	//int tmIndexTurnLeftUp_RightDown = 5;
+	//int tmIndexTurnLeftDown_RightUp = 4;
+	public tk2dSprite spriteHead;
+	public tk2dSprite spriteBody;
+	public tk2dSprite spriteTail;
+	public tk2dSprite spriteTurnLeftUp_RightDown;
+	public tk2dSprite spriteTurnLeftDown_RightUp;
+	public List<SnakeSprite> SnakeSprites;
+	
 	Direction NextDirection;
 	
 	public float lastMovingTime = 0.0f;
@@ -89,27 +108,58 @@ public class SnakeShow : MonoBehaviour {
 	void Start () {
 		mySnake = new Snake();
 		NextDirection = mySnake.CurrentDirection;
+		//tk2dSprite sprite = SnakeSprites.spriteCollection.spriteDefinitions[0].
+		
+		//filling snake sprites list
+		SnakeSprites = new List<SnakeSprite>();
+		tk2dSprite tmpSprite;
+		tmpSprite = spriteHead;
+		SnakeSprites.Add( new SnakeSprite(tilemap.GetTilePosition(mySnake.Links[0].x, mySnake.Links[0].y)+new Vector3(tilemap.height, tilemap.height, 0), spriteHead));
+		for (int i = 1; i < mySnake.CurrentLength-1; i++)
+		{
+			if ((mySnake.Links[i-1].x-mySnake.Links[i+1].x!=0)&&(mySnake.Links[i-1].y-mySnake.Links[i+1].y!=0)) //if turn
+			{
+				if ((mySnake.Links[i-1].x-mySnake.Links[i+1].x>0)^(mySnake.Links[i-1].y-mySnake.Links[i+1].y>0))
+					//tilemap.SetTile(mySnake.Links[i].x, mySnake.Links[i].y, 0, tmIndexTurnLeftDown_RightUp);
+					SnakeSprites.Add( new SnakeSprite(tilemap.GetTilePosition(mySnake.Links[i].x, mySnake.Links[i].y)+new Vector3(tilemap.height, tilemap.height, 0), spriteTurnLeftDown_RightUp));
+				else
+					//tilemap.SetTile(mySnake.Links[i].x, mySnake.Links[i].y, 0, tmIndexTurnLeftUp_RightDown);
+					SnakeSprites.Add( new SnakeSprite(tilemap.GetTilePosition(mySnake.Links[i].x, mySnake.Links[i].y)+new Vector3(tilemap.height, tilemap.height, 0), spriteTurnLeftUp_RightDown));
+			}
+			else
+				//tilemap.SetTile(mySnake.Links[i].x, mySnake.Links[i].y, 0, tmIndexBody);
+				SnakeSprites.Add( new SnakeSprite(tilemap.GetTilePosition(mySnake.Links[i].x, mySnake.Links[i].y)+new Vector3(tilemap.height, tilemap.height, 0), spriteBody));
+		}
+		//tilemap.SetTile(mySnake.Links[mySnake.CurrentLength-1].x, mySnake.Links[mySnake.CurrentLength-1].y, 0, tmIndexTail);
+		SnakeSprites.Add( new SnakeSprite(tilemap.GetTilePosition(mySnake.Links[mySnake.CurrentLength-1].x, mySnake.Links[mySnake.CurrentLength-1].y)+new Vector3(tilemap.height, tilemap.height, 0), spriteTail));
+		
+		//tmpSprite.
+		//GameObject bullet = Instantiate(tmpSprite,, tilemap.transform.rotation) as GameObject;
+		GameObject bullet;
+		for (int j=0; j < SnakeSprites.Count; j++)
+			bullet = Instantiate(SnakeSprites[j].sprite, SnakeSprites[j].position, tilemap.transform.rotation) as GameObject;
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		if (mySnake.CurrentState != SnakeState.Death)
 		{
-			tilemap.SetTile(mySnake.UnitList[0].x, mySnake.UnitList[0].y, 0, tmIndexHead);
-			for (int i = 1; i < mySnake.CurrentLength-1; i++)
+			//tilemap.SetTile(mySnake.Links[0].x, mySnake.Links[0].y, 0, tmIndexHead);
+
+			/*for (int i = 1; i < mySnake.CurrentLength-1; i++)
 			{
-				if ((mySnake.UnitList[i-1].x-mySnake.UnitList[i+1].x!=0)&&(mySnake.UnitList[i-1].y-mySnake.UnitList[i+1].y!=0)) //if turn
+				if ((mySnake.Links[i-1].x-mySnake.Links[i+1].x!=0)&&(mySnake.Links[i-1].y-mySnake.Links[i+1].y!=0)) //if turn
 				{
-					if ((mySnake.UnitList[i-1].x-mySnake.UnitList[i+1].x>0)^(mySnake.UnitList[i-1].y-mySnake.UnitList[i+1].y>0))
-						tilemap.SetTile(mySnake.UnitList[i].x, mySnake.UnitList[i].y, 0, tmIndexTurnLeftDown_RightUp);
+					if ((mySnake.Links[i-1].x-mySnake.Links[i+1].x>0)^(mySnake.Links[i-1].y-mySnake.Links[i+1].y>0))
+						tilemap.SetTile(mySnake.Links[i].x, mySnake.Links[i].y, 0, tmIndexTurnLeftDown_RightUp);
 					else
-						tilemap.SetTile(mySnake.UnitList[i].x, mySnake.UnitList[i].y, 0, tmIndexTurnLeftUp_RightDown);
+						tilemap.SetTile(mySnake.Links[i].x, mySnake.Links[i].y, 0, tmIndexTurnLeftUp_RightDown);
 				}
 				else
-					tilemap.SetTile(mySnake.UnitList[i].x, mySnake.UnitList[i].y, 0, tmIndexBody);
+					tilemap.SetTile(mySnake.Links[i].x, mySnake.Links[i].y, 0, tmIndexBody);
 			}
-			tilemap.SetTile(mySnake.UnitList[mySnake.CurrentLength-1].x, mySnake.UnitList[mySnake.CurrentLength-1].y, 0, tmIndexTail);
-			tilemap.Build();
+			tilemap.SetTile(mySnake.Links[mySnake.CurrentLength-1].x, mySnake.Links[mySnake.CurrentLength-1].y, 0, tmIndexTail);
+			tilemap.Build();*/
 		}
 		if ((Input.anyKeyDown)&&(mySnake.CurrentState == SnakeState.Sleep))
 			mySnake.CurrentState = SnakeState.Moving;
@@ -124,9 +174,9 @@ public class SnakeShow : MonoBehaviour {
 		
 		if (Time.time > lastMovingTime + 0.5f)
 		{
-			tilemap.ClearTile(mySnake.UnitList[mySnake.UnitList.Count-1].x, mySnake.UnitList[mySnake.UnitList.Count-1].y, 0);
-			mySnake.Move();
-			lastMovingTime = Time.time;	
+			//tilemap.ClearTile(mySnake.Links[mySnake.Links.Count-1].x, mySnake.Links[mySnake.Links.Count-1].y, 0);
+			//mySnake.Move();
+			//lastMovingTime = Time.time;	
 		}
 	}
 	
