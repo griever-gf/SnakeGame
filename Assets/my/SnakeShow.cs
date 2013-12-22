@@ -120,11 +120,6 @@ public class SnakeShow : MonoBehaviour {
 		MovesCounter = 0;
 	}
 	
-	public void SnakeStart()
-	{
-		CurrentState = SnakeState.Moving;
-	}
-	
 	void GenerateSnakeTiles()
 	{
 		AddTile(0, tileIndexHead);
@@ -255,5 +250,31 @@ public class SnakeShow : MonoBehaviour {
 		//ShowNewDiscretePosition();
 		if (CurrentState != SnakeState.Death)
 			GenerateSnakeTiles();
+	}
+	
+	//external messages receivers
+	void SnakeStart()
+	{
+		CurrentState = SnakeState.Moving;
+	}
+	
+	void SnakeMoveUp()
+	{
+		CurrentDirection = Direction.Up;
+	}
+	
+	void SnakeMoveDown()
+	{
+		CurrentDirection = Direction.Down;
+	}
+	
+	void SnakeMoveLeft()
+	{
+		CurrentDirection = Direction.Left;
+	}
+	
+	void SnakeMoveRight()
+	{
+		CurrentDirection = Direction.Right;
 	}
 }
