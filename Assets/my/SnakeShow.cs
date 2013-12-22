@@ -48,6 +48,10 @@ public class SnakeShow : MonoBehaviour {
 	public float delayMoving;
 	int MovesCounter;
 	
+	public AudioClip soundMove;
+	public AudioClip soundSwallow;
+	public AudioClip soundGameOver;
+	
 	void AddTile(int LinkIndex, int TileIndex)
 	{
 		tilemap.SetTile(Links[LinkIndex].x, Links[LinkIndex].y, 1, TileIndex);
@@ -220,6 +224,7 @@ public class SnakeShow : MonoBehaviour {
 		{
 			tilemap.ClearTile(Links[Links.Count-1].x, Links[Links.Count-1].y, 1);
 			Links.RemoveAt(Links.Count-1); //remove tail
+			AudioSource.PlayClipAtPoint(soundMove, transform.position);
 		}
 		else
 		{
@@ -227,9 +232,11 @@ public class SnakeShow : MonoBehaviour {
 			{
 				GenerateFood();
 				delayMoving *= 0.9f;
+				AudioSource.PlayClipAtPoint(soundSwallow, transform.position);
 			}
 			else //game over
 			{
+				AudioSource.PlayClipAtPoint(soundGameOver, transform.position);
 				Links.RemoveAt(0);
 				Debug.Log("GAME OVER! Links: " + Links.Count + " Moves: " + MovesCounter);
 				CurrentState = SnakeState.Death;
