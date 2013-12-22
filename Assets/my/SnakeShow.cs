@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
+using Mono.Data.SqliteClient;
 
 public enum SnakeState
 {
@@ -260,21 +262,46 @@ public class SnakeShow : MonoBehaviour {
 	
 	void SnakeMoveUp()
 	{
-		CurrentDirection = Direction.Up;
+		if (CurrentState == SnakeState.Moving)
+			CurrentDirection = Direction.Up;
 	}
 	
 	void SnakeMoveDown()
 	{
-		CurrentDirection = Direction.Down;
+		if (CurrentState == SnakeState.Moving)
+			CurrentDirection = Direction.Down;
 	}
 	
 	void SnakeMoveLeft()
 	{
-		CurrentDirection = Direction.Left;
+		if (CurrentState == SnakeState.Moving)
+			CurrentDirection = Direction.Left;
 	}
 	
 	void SnakeMoveRight()
 	{
-		CurrentDirection = Direction.Right;
+		if (CurrentState == SnakeState.Moving)
+			CurrentDirection = Direction.Right;
+	}
+	
+	private string dbPath;
+	private IDbConnection dbConnection;
+	private IDbCommand dbCommand;
+	private IDataReader dbReader;
+	
+	void TestDB()
+	{
+		dbPath = "URI=file:"+ Application.dataPath + "/StreamingAssets/SnakeGameDatabase2.bytes";
+		//Debug.Log(dbPath);
+		dbConnection=new SqliteConnection(dbPath);
+		dbConnection.Open();
+		//Debug.Log(dbConnection.State);
+		dbCommand=dbConnection.CreateCommand();
+		dbCommand.CommandText="SELECT `Player` FROM `Records`";//"SELECT `id` FROM `npc` WHERE `name`='"+NPCname+"'";
+		dbReader=dbCommand.ExecuteReader();   
+		while( dbReader.Read()){
+			Debug.Log(dbReader.GetString(0));
+		}
+		dbConnection.Close();
 	}
 }
