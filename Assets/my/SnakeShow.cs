@@ -24,11 +24,10 @@ public struct SnakeLink
 }
 
 public class SnakeShow : MonoBehaviour {
-	
-	SnakeState CurrentState;
-	public const int InitialLength = 5;
-	public const float InitialDelay = 0.5f;
+	public int InitialLength = 5;
+	public float InitialDelay = 0.5f;
 	List<SnakeLink> Links;
+	SnakeState CurrentState;
 
 	Direction CurrentDirection;
 	Direction PreviousDirection;
@@ -45,7 +44,7 @@ public class SnakeShow : MonoBehaviour {
 	public int tileIndexFood = 8;
 	
 	float lastMovingTime = 0.0f;
-	public float delayMoving;
+	float delayMoving;
 	int MovesCounter;
 	
 	public AudioClip soundMove;
@@ -121,6 +120,11 @@ public class SnakeShow : MonoBehaviour {
 		MovesCounter = 0;
 	}
 	
+	public void SnakeStart()
+	{
+		CurrentState = SnakeState.Moving;
+	}
+	
 	void GenerateSnakeTiles()
 	{
 		AddTile(0, tileIndexHead);
@@ -168,8 +172,8 @@ public class SnakeShow : MonoBehaviour {
 	void Update () {
 		if (CurrentState != SnakeState.Death)
 		{
-			if ((Input.anyKeyDown)&&(CurrentState == SnakeState.Sleep))
-				CurrentState = SnakeState.Moving;
+			//if ((Input.anyKeyDown)&&(CurrentState == SnakeState.Sleep))
+				//CurrentState = SnakeState.Moving;
 				
 			if (Input.GetKey(KeyCode.UpArrow)||Input.GetKey(KeyCode.W))
 				CurrentDirection = Direction.Up;
