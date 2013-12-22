@@ -25,24 +25,16 @@ public struct SnakeLink
 
 public class SnakeShow : MonoBehaviour {
 	
-	public SnakeState CurrentState;
-	const int InitialLength = 5;
-	public int CurrentLength = InitialLength;
-	public List<SnakeLink> Links;
+	SnakeState CurrentState;
+	public const int InitialLength = 5;
+	public const float InitialDelay = 0.5f;
+	List<SnakeLink> Links;
 
-	public Direction CurrentDirection;
-	public Direction PreviousDirection;
+	Direction CurrentDirection;
+	Direction PreviousDirection;
 	
-	public List<GameObject> Sprites;
 	public tk2dTileMap tilemap;
-	
-	/*public tk2dSprite spriteHead;
-	public tk2dSprite spriteBody;
-	public tk2dSprite spriteTail;
-	public tk2dSprite spriteTurnLeftUp;
-	public tk2dSprite spriteTurnLeftDown;
-	public tk2dSprite spriteTurnRightUp;
-	public tk2dSprite spriteTurnRightDown;*/
+
 	public int tileIndexHead = 3;
 	public int tileIndexBody = 0;
 	public int tileIndexTail = 1;
@@ -50,59 +42,12 @@ public class SnakeShow : MonoBehaviour {
 	public int tileIndexTurnLeftDown = 2;
 	public int tileIndexTurnRightUp = 6;
 	public int tileIndexTurnRightDown = 5;
+	public int tileIndexFood = 8;
 	
-	//Direction NextDirection;
-	public float lastMovingTime = 0.0f;
+	float lastMovingTime = 0.0f;
+	public float delayMoving;
+	int MovesCounter;
 	
-	/*void AddSprite(int LinkIndex, tk2dSprite sprite)
-	{
-		//tilemap.TilePrefabsList.
-		
-		Direction d = Direction.Right;
-		if (LinkIndex == 0) //head
-		{
-			if (Links[0].x - Links[1].x != 0) //if horizontal
-				d = (Links[0].x - Links[1].x > 0) ? Direction.Right : Direction.Left;
-			else
-				d = (Links[0].y - Links[1].y > 0) ? Direction.Up : Direction.Down;
-		}
-		else
-		{
-			if (LinkIndex == CurrentLength-1) //tail
-			{
-				if (Links[LinkIndex].x - Links[LinkIndex-1].x != 0) //if horizontal
-					d = (Links[LinkIndex].x - Links[LinkIndex-1].x > 0) ? Direction.Left : Direction.Right;
-				else
-					d = (Links[LinkIndex].y - Links[LinkIndex-1].y > 0) ? Direction.Down : Direction.Up;
-			}
-			else
-			{
-				if (!((Links[LinkIndex-1].x - Links[LinkIndex+1].x != 0)&&(Links[LinkIndex-1].y - Links[LinkIndex+1].y != 0))) //if not turn
-				{
-					if(Links[LinkIndex-1].x - Links[LinkIndex+1].x == 0) //if vertical
-					{
-						d = Direction.Up;
-					}
-				}
-			}
-		}
-
-		//tk2dSprite tmp = Instantiate(sprite, tilemap.GetTilePosition(Links[LinkIndex].x, Links[LinkIndex].y)+new Vector3(tilemap.height, tilemap.height, 0), tilemap.transform.rotation) as tk2dSprite;
-		tk2dSprite tmp = Instantiate(sprite, tilemap.GetTilePosition(Links[LinkIndex].x, Links[LinkIndex].y)+new Vector3(16, 16, 0), tilemap.transform.rotation) as tk2dSprite;
-		switch (d)
-		{
-			case Direction.Up:
-				tmp.transform.eulerAngles = new Vector3(0, 0, Mathf.Atan2(1, 0) * Mathf.Rad2Deg);
-				break;
-			case Direction.Left:
-				tmp.transform.eulerAngles = new Vector3(0, 0, Mathf.Atan2(0, -1) * Mathf.Rad2Deg);
-				break;
-			case Direction.Down:
-				tmp.transform.eulerAngles = new Vector3(0, 0, Mathf.Atan2(-1, 0) * Mathf.Rad2Deg);
-				break;
-		}
-		Sprites.Add(tmp.gameObject);
-	}*/
 	void AddTile(int LinkIndex, int TileIndex)
 	{
 		tilemap.SetTile(Links[LinkIndex].x, Links[LinkIndex].y, 1, TileIndex);
@@ -117,7 +62,7 @@ public class SnakeShow : MonoBehaviour {
 		}
 		else
 		{
-			if (LinkIndex == CurrentLength-1) //tail
+			if (LinkIndex == Links.Count-1) //tail
 			{
 				if (Links[LinkIndex].x - Links[LinkIndex-1].x != 0) //if horizontal
 					d = (Links[LinkIndex].x - Links[LinkIndex-1].x > 0) ? Direction.Left : Direction.Right;
@@ -135,9 +80,6 @@ public class SnakeShow : MonoBehaviour {
 				}
 			}
 		}
-
-		//tk2dSprite tmp = Instantiate(sprite, tilemap.GetTilePosition(Links[LinkIndex].x, Links[LinkIndex].y)+new Vector3(tilemap.height, tilemap.height, 0), tilemap.transform.rotation) as tk2dSprite;
-		//tk2dSprite tmp = Instantiate(sprite, tilemap.GetTilePosition(Links[LinkIndex].x, Links[LinkIndex].y)+new Vector3(16, 16, 0), tilemap.transform.rotation) as tk2dSprite;
 		switch (d)
 		{
 			case Direction.Up:
@@ -153,103 +95,68 @@ public class SnakeShow : MonoBehaviour {
 				tilemap.SetTileFlags(Links[LinkIndex].x, Links[LinkIndex].y, 1, tk2dTileFlags.None);
 				break;
 		}
-		//Sprites.Add(tmp.gameObject);
-	}
-	
-	void InsertSprite(int position, int LinkIndex, tk2dSprite sprite)
-	{
-		//tk2dSprite tmp = Instantiate(sprite, tilemap.GetTilePosition(Links[LinkIndex].x, Links[LinkIndex].y)+new Vector3(tilemap.height, tilemap.height, 0), tilemap.transform.rotation) as tk2dSprite;
-		//Sprites.Add(tmp.gameObject);
-	}
-	
-	void ShowNewDiscretePosition()
-	{
-		//foreach (GameObject go in Sprites)
-			//Destroy(go);
-		//GenerateSnakeSprites();
 	}
 
 	// Use this for initialization
 	void Start () {
+		GameStart();
+		GenerateFood();
+	}
+	
+	void GameStart()
+	{
 		Links = new List<SnakeLink>();
 		SnakeLink uc;
 		uc.y = 2;
 		for (uc.x = InitialLength; uc.x >= 1; uc.x--)
 			Links.Add(uc);
-		//GenerateSnakeSprites();
 		GenerateSnakeTiles();
 		CurrentState = SnakeState.Sleep;
 		CurrentDirection = PreviousDirection = Direction.Right;
-	}
-	
-	void GenerateSnakeSprites()
-	{
-		/*Sprites = new List<GameObject>();
-		AddSprite(0, spriteHead);
-		for (int i = 1; i < CurrentLength-1; i++)
-		{
-			if ((Links[i-1].x - Links[i+1].x != 0)&&(Links[i-1].y - Links[i+1].y != 0)) //if turn
-			{
-				if ((Links[i-1].x - Links[i+1].x > 0)^(Links[i-1].y - Links[i+1].y > 0))
-				{
-					if ((Links[i].x - Links[i-1].x > 0)||(Links[i].x - Links[i+1].x > 0))//if one neighbor on the left
-						AddSprite(i, spriteTurnLeftDown);
-					else
-						AddSprite(i, spriteTurnRightUp);
-				}	
-				else
-				{
-					if ((Links[i].x - Links[i-1].x > 0)||(Links[i].x - Links[i+1].x > 0))//if one neighbor on the left
-						AddSprite(i, spriteTurnLeftUp);
-					else
-						AddSprite(i, spriteTurnRightDown);
-				}
-			}
-			else
-				AddSprite(i, spriteBody);
-		}
-		AddSprite(CurrentLength-1, spriteTail);*/
+		delayMoving = InitialDelay;
+		MovesCounter = 0;
 	}
 	
 	void GenerateSnakeTiles()
 	{
-		//tilemap.SetTile(Links[0].x, Links[0].y, 1, tileIndexHead);
 		AddTile(0, tileIndexHead);
-		for (int i = 1; i < CurrentLength-1; i++)
+		for (int i = 1; i <= Links.Count-2; i++)
 		{
 			if ((Links[i-1].x - Links[i+1].x != 0)&&(Links[i-1].y - Links[i+1].y != 0)) //if turn
 			{
 				if ((Links[i-1].x - Links[i+1].x > 0)^(Links[i-1].y - Links[i+1].y > 0))
 				{
 					if ((Links[i].x - Links[i-1].x > 0)||(Links[i].x - Links[i+1].x > 0))//if one neighbor on the left
-						//AddSprite(i, spriteTurnLeftDown);
-						//tilemap.SetTile(Links[i].x, Links[i].y, 1, tileIndexTurnLeftDown);
 						AddTile(i, tileIndexTurnLeftDown);
 					else
-						//AddSprite(i, spriteTurnRightUp);
-						//tilemap.SetTile(Links[i].x, Links[i].y, 1, tileIndexTurnRightUp);
 						AddTile(i, tileIndexTurnRightUp);
 				}	
 				else
 				{
 					if ((Links[i].x - Links[i-1].x > 0)||(Links[i].x - Links[i+1].x > 0))//if one neighbor on the left
-						//AddSprite(i, spriteTurnLeftUp);
-						//tilemap.SetTile(Links[i].x, Links[i].y, 1, tileIndexTurnLeftUp);
 						AddTile(i, tileIndexTurnLeftUp);
 					else
-						//AddSprite(i, spriteTurnRightDown);
-						//tilemap.SetTile(Links[i].x, Links[i].y, 1, tileIndexTurnRightDown);
 						AddTile(i, tileIndexTurnRightDown);
 				}
 			}
 			else
-				//AddSprite(i, spriteBody);
-				//tilemap.SetTile(Links[i].x, Links[i].y, 1, tileIndexBody);
 				AddTile(i, tileIndexBody);
 		}
-		//AddSprite(CurrentLength-1, spriteTail);
-		//tilemap.SetTile(Links[CurrentLength-1].x, Links[CurrentLength-1].y, 1, tileIndexTail);
-		AddTile(CurrentLength-1, tileIndexTail);
+		AddTile(Links.Count-1, tileIndexTail);
+		tilemap.Build();
+	}
+	
+	void GenerateFood()
+	{
+		System.Random rnd = new System.Random();
+		int x, y;
+		do
+		{
+			x = rnd.Next(0,tilemap.width);
+			y = rnd.Next(0,tilemap.height);
+		}
+		while(tilemap.GetTile(x, y, 1) != -1);
+		tilemap.SetTile(x, y, 1, tileIndexFood);
 		tilemap.Build();
 	}
 	
@@ -270,23 +177,28 @@ public class SnakeShow : MonoBehaviour {
 				CurrentDirection = Direction.Right;
 			
 			if (CurrentState == SnakeState.Moving)
-				if (Time.time > lastMovingTime + 0.5f)
+				if (Time.time > lastMovingTime + delayMoving)
 				{
 					Move();
 					lastMovingTime = Time.time;
 				}
 		}
+		else
+		{
+			if (Input.anyKeyDown)
+			{
+				GameStart();
+			}
+		}
 	}
 	
 	public void Move()
 	{
+		MovesCounter++;
+		
 		if ((int)PreviousDirection + (int)CurrentDirection == 3) // check for opposite direction
 			CurrentDirection = PreviousDirection;
-		
-		tilemap.ClearTile(Links[Links.Count-1].x, Links[Links.Count-1].y, 1);
-		Links.RemoveAt(Links.Count-1); //remove tai
-		
-		
+
 		switch (CurrentDirection)		
 		{
 			case Direction.Right:
@@ -304,7 +216,33 @@ public class SnakeShow : MonoBehaviour {
 		}
 		PreviousDirection = CurrentDirection;
 		
+		if (tilemap.GetTile(Links[0].x, Links[0].y, 1) == -1) //if next tilemap is clear
+		{
+			tilemap.ClearTile(Links[Links.Count-1].x, Links[Links.Count-1].y, 1);
+			Links.RemoveAt(Links.Count-1); //remove tail
+		}
+		else
+		{
+			if (tilemap.GetTile(Links[0].x, Links[0].y, 1) == tileIndexFood) // grow snake
+			{
+				GenerateFood();
+				delayMoving *= 0.9f;
+			}
+			else //game over
+			{
+				Links.RemoveAt(0);
+				Debug.Log("GAME OVER! Links: " + Links.Count + " Moves: " + MovesCounter);
+				CurrentState = SnakeState.Death;
+				foreach (SnakeLink link in Links)
+					tilemap.ClearTile(link.x, link.y, 1);
+				tilemap.Build();
+			}
+		}
+		
+		//Debug.Log(tilemap.GetTile(Links[0].x, Links[0].y, 1));
+		
 		//ShowNewDiscretePosition();
-		GenerateSnakeTiles();
+		if (CurrentState != SnakeState.Death)
+			GenerateSnakeTiles();
 	}
 }
