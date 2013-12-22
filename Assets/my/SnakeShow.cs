@@ -78,25 +78,20 @@ public class SnakeShow : MonoBehaviour {
 			}
 		}
 
-		tk2dSprite tmp = Instantiate(sprite, tilemap.GetTilePosition(Links[LinkIndex].x, Links[LinkIndex].y)+new Vector3(tilemap.height, tilemap.height, 0), tilemap.transform.rotation) as tk2dSprite;
-		//float yRotation = 90.0f;
-		//tmp.transform.EulerAngles = new Vector3(tmp.transform.eulerAngles.x, yRotation, tmp.transform.eulerAngles.z);
-		//tmp.transform.eulerAngles = new Vector3(tmp.transform.eulerAngles.x, tmp.transform.eulerAngles.y, tmp.transform.eulerAngles.z);
-		//tmp.transform.rotation = Quaternion.Euler(tmp.transform.eulerAngles.x, 90, tmp.transform.eulerAngles.z);
-		//rotation *= Quaternion.Euler(0, 90, 0);
-		//tmp.transform.localEulerAngles = new Vector3( 0, 90, 0 );
-			switch (d)
-			{
-				case Direction.Up:
-					tmp.transform.eulerAngles = new Vector3(0, 0, Mathf.Atan2(1, 0) * Mathf.Rad2Deg);
-					break;
-				case Direction.Left:
-					tmp.transform.eulerAngles = new Vector3(0, 0, Mathf.Atan2(0, -1) * Mathf.Rad2Deg);
-					break;
-				case Direction.Down:
-					tmp.transform.eulerAngles = new Vector3(0, 0, Mathf.Atan2(-1, 0) * Mathf.Rad2Deg);
-					break;
-			}
+		//tk2dSprite tmp = Instantiate(sprite, tilemap.GetTilePosition(Links[LinkIndex].x, Links[LinkIndex].y)+new Vector3(tilemap.height, tilemap.height, 0), tilemap.transform.rotation) as tk2dSprite;
+		tk2dSprite tmp = Instantiate(sprite, tilemap.GetTilePosition(Links[LinkIndex].x, Links[LinkIndex].y)+new Vector3(16, 16, 0), tilemap.transform.rotation) as tk2dSprite;
+		switch (d)
+		{
+			case Direction.Up:
+				tmp.transform.eulerAngles = new Vector3(0, 0, Mathf.Atan2(1, 0) * Mathf.Rad2Deg);
+				break;
+			case Direction.Left:
+				tmp.transform.eulerAngles = new Vector3(0, 0, Mathf.Atan2(0, -1) * Mathf.Rad2Deg);
+				break;
+			case Direction.Down:
+				tmp.transform.eulerAngles = new Vector3(0, 0, Mathf.Atan2(-1, 0) * Mathf.Rad2Deg);
+				break;
+		}
 		Sprites.Add(tmp.gameObject);
 	}
 	
@@ -117,7 +112,7 @@ public class SnakeShow : MonoBehaviour {
 	void Start () {
 		Links = new List<SnakeLink>();
 		SnakeLink uc;
-		uc.y = 1;
+		uc.y = 2;
 		for (uc.x = InitialLength; uc.x >= 1; uc.x--)
 			Links.Add(uc);
 		GenerateSnakeSprites();
