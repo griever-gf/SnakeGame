@@ -52,6 +52,8 @@ public class SnakeShow : MonoBehaviour {
 	public AudioClip soundSwallow;
 	public AudioClip soundPause;
 	
+	public tk2dTextMesh labelPause;
+	
 	public string RecordEnterSceneName;
 	public string RecordsViewSceneName;
 	
@@ -252,18 +254,25 @@ public class SnakeShow : MonoBehaviour {
 				SwitchToRecordEnter();
 			}
 		}
-		
-		//Debug.Log(tilemap.GetTile(Links[0].x, Links[0].y, 1));
-		
-		//ShowNewDiscretePosition();
+
 		if (CurrentState != SnakeState.Death)
 			GenerateSnakeTiles();
 	}
 	
 	//external messages receivers
-	void SnakeStart()
+	void StartButtonHandler()
 	{
-		CurrentState = SnakeState.Moving;
+		if (CurrentState != SnakeState.Moving)
+		{
+			CurrentState = SnakeState.Moving;
+			labelPause.text = "";
+		}
+		else
+		{
+			CurrentState = SnakeState.Sleep;
+			labelPause.text = "pause";
+			AudioSource.PlayClipAtPoint(soundPause, transform.position);
+		}
 	}
 	
 	void SnakeMoveUp()
