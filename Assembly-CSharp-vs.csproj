@@ -44,6 +44,7 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\SQLite\SQLite.cs" />
      <Compile Include="Assets\TK2DROOT\tk2d\Code\Camera\tk2dCamera.cs" />
      <Compile Include="Assets\TK2DROOT\tk2d\Code\Camera\tk2dCameraAnchor.cs" />
      <Compile Include="Assets\TK2DROOT\tk2d\Code\Camera\tk2dCameraUtil.cs" />
@@ -120,6 +121,7 @@
      <Compile Include="Assets\TK2DROOT\tk2d_demo\tk2dDemoCameraController.cs" />
      <Compile Include="Assets\TK2DROOT\tk2d_demo\tk2dDemoReloadController.cs" />
      <Compile Include="Assets\TK2DROOT\tk2d_demo\tk2dDemoRuntimeSpriteController.cs" />
+     <Compile Include="Assets\my\AddResult.cs" />
      <Compile Include="Assets\my\ShowRecords.cs" />
      <Compile Include="Assets\my\SnakeShow.cs" />
      <None Include="Assets\TK2DROOT\tk2d\Shaders\LitSolidVertexColor.shader" />
@@ -146,22 +148,22 @@
      <None Include="Assets\TK2DROOT\tk2d\Shaders\AdditiveVertexColor.shader" />
      <None Include="Assets\TK2DROOT\tk2d_demo\democameradata\source\democamerafont.fnt" />
  <Reference Include="Mono.Data.Sqlite">
- <HintPath>Assets\Mono.Data.Sqlite.dll</HintPath>
+ <HintPath>Assets\Plugins\Mono.Data.Sqlite.dll</HintPath>
  </Reference>
  <Reference Include="Mono.Data.SqliteClient">
- <HintPath>Assets\Mono.Data.SqliteClient.dll</HintPath>
+ <HintPath>Assets\Plugins\Mono.Data.SqliteClient.dll</HintPath>
  </Reference>
  <Reference Include="System.Configuration">
- <HintPath>Assets\System.Configuration.dll</HintPath>
+ <HintPath>Assets\Plugins\System.Configuration.dll</HintPath>
  </Reference>
  <Reference Include="System.Data">
- <HintPath>Assets\System.Data.dll</HintPath>
+ <HintPath>Assets\Plugins\System.Data.dll</HintPath>
  </Reference>
  <Reference Include="System.EnterpriseServices">
- <HintPath>Assets\System.EnterpriseServices.dll</HintPath>
+ <HintPath>Assets\Plugins\System.EnterpriseServices.dll</HintPath>
  </Reference>
  <Reference Include="System.Security">
- <HintPath>Assets\System.Security.dll</HintPath>
+ <HintPath>Assets\Plugins\System.Security.dll</HintPath>
  </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

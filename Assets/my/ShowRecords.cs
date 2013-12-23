@@ -1,7 +1,19 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using System.IO;
 using System.Data;
 using Mono.Data.SqliteClient;
+using SQLite;
+
+public class Record
+{
+    //[PrimaryKey, AutoIncrement]
+    //public int Id { get; set; }
+    public string Player { get; set; }
+	public int Links { get; set; }
+	public int Moves { get; set; }
+}
 
 public class ShowRecords : MonoBehaviour {
 	
@@ -11,20 +23,19 @@ public class ShowRecords : MonoBehaviour {
 	public tk2dTextMesh textmeshResultsMoves;
 	
 	private string dbPath;
-	private IDbConnection dbConnection;
-	private IDbCommand dbCommand;
-	private IDataReader dbReader;
 
 	// Use this for initialization
 	void Start () {
+		//Windows
 		dbPath = "URI=file:"+ Application.dataPath + "/StreamingAssets/SnakeGameDatabase2.bytes";
+		
 		//Debug.Log(dbPath);
-		dbConnection=new SqliteConnection(dbPath);
+		IDbConnection dbConnection=new SqliteConnection(dbPath);
 		dbConnection.Open();
 		//Debug.Log(dbConnection.State);
-		dbCommand=dbConnection.CreateCommand();
+		IDbCommand dbCommand=dbConnection.CreateCommand();
 		dbCommand.CommandText="SELECT `Player`,`Links`,`Moves` FROM `Records` ORDER BY `Links` DESC,`Moves` DESC LIMIT 5";//"SELECT `id` FROM `npc` WHERE `name`='"+NPCname+"'";
-		dbReader=dbCommand.ExecuteReader();   
+		IDataReader dbReader=dbCommand.ExecuteReader();   
 		while( dbReader.Read()){
 			//Debug.Log(dbReader.GetString(0));
 			textmeshResultsNames.text += dbReader.GetString(0) +  "\n";
@@ -32,6 +43,24 @@ public class ShowRecords : MonoBehaviour {
 			textmeshResultsMoves.text += dbReader.GetString(2) +  "\n";
 		}
 		dbConnection.Close();
+		
+		//Android
+		/*string dbExtractPath = "jar:file://" + Application.dataPath + "!/assets/SnakeGameDatabase2.bytes";
+		dbPath = Application.persistentDataPath + "/SnakeGameDatabase2.bytes";
+		WWW www = new WWW(dbExtractPath);
+		while(!www .isDone) {} // тут очень внимательно, используйте корутины
+			File.WriteAllBytes(dbPath, www.bytes);
+		
+		var db = new SQLiteConnection(dbPath, false);
+		
+		List<Record> QueryVals = db.Query<Record>("SELECT `Player`,`Links`,`Moves` FROM `Records` ORDER BY `Links` DESC,`Moves` DESC LIMIT 5");
+		for (int i=0; i<QueryVals.Count; i++)
+		{
+			textmeshResultsNames.text += QueryVals[i].Player +  "\n";
+			textmeshResultsLinks.text += QueryVals[i].Links +  "\n";
+			textmeshResultsMoves.text += QueryVals[i].Moves +  "\n";
+		}
+		db.Close();*/
 	}
 	
 	// Update is called once per frame

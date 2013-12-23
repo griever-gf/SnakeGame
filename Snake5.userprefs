@@ -1,18 +1,15 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\my\ShowRecords.cs">
-    <Files>
-      <File FileName="Assets\my\SnakeShow.cs" Line="172" Column="28" />
-      <File FileName="Assets\my\ShowRecords.cs" Line="26" Column="101" />
-    </Files>
+  <MonoDevelop.Ide.Workbench>
     <Pads>
       <Pad Id="ProjectPad">
         <State expanded="True">
           <Node name="Assembly-CSharp" expanded="True">
             <Node name="Assets" expanded="True">
               <Node name="my" expanded="True">
-                <Node name="ShowRecords.cs" selected="True" />
+                <Node name="AddResult.cs" selected="True" />
               </Node>
+              <Node name="SQLite" expanded="True" />
             </Node>
           </Node>
         </State>
@@ -20,7 +17,9 @@
     </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore />
+    <BreakpointStore>
+      <Breakpoint file="C:\Dropbox\MY_PROJECTS\Unity 3D\Snake5\Assets\my\AddResult.cs" line="31" />
+    </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
 </Properties>

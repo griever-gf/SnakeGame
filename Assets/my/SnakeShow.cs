@@ -26,7 +26,8 @@ public struct SnakeLink
 public class SnakeShow : MonoBehaviour {
 	public int InitialLength = 5;
 	public float InitialDelay = 0.5f;
-	List<SnakeLink> Links;
+	public List<SnakeLink> Links;
+	public static int FinalLength;
 	SnakeState CurrentState;
 
 	Direction CurrentDirection;
@@ -45,13 +46,14 @@ public class SnakeShow : MonoBehaviour {
 	
 	float lastMovingTime = 0.0f;
 	float delayMoving;
-	int MovesCounter;
+	public static int MovesCounter;
 	
 	public AudioClip soundMove;
 	public AudioClip soundSwallow;
 	public AudioClip soundGameOver;
 	
-	public string RecordsSceneName;
+	public string RecordEnterSceneName;
+	public string RecordsViewSceneName;
 	
 	void AddTile(int LinkIndex, int TileIndex)
 	{
@@ -241,9 +243,11 @@ public class SnakeShow : MonoBehaviour {
 				Links.RemoveAt(0);
 				Debug.Log("GAME OVER! Links: " + Links.Count + " Moves: " + MovesCounter);
 				CurrentState = SnakeState.Death;
+				FinalLength = Links.Count;
 				foreach (SnakeLink link in Links)
 					tilemap.ClearTile(link.x, link.y, 1);
 				tilemap.Build();
+				SwitchToRecordEnter();
 			}
 		}
 		
@@ -284,8 +288,13 @@ public class SnakeShow : MonoBehaviour {
 			CurrentDirection = Direction.Right;
 	}
 	
-	void SwitchToRecords()
+	void SwitchToRecordsView()
 	{
-		Application.LoadLevel(RecordsSceneName);
+		Application.LoadLevel(RecordsViewSceneName);
+	}
+	
+	void SwitchToRecordEnter()
+	{
+		Application.LoadLevel(RecordEnterSceneName);
 	}
 }
