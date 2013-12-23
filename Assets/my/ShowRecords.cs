@@ -34,7 +34,7 @@ public class ShowRecords : MonoBehaviour {
 		dbConnection.Open();
 		//Debug.Log(dbConnection.State);
 		IDbCommand dbCommand=dbConnection.CreateCommand();
-		dbCommand.CommandText="SELECT `Player`,`Links`,`Moves` FROM `Records` ORDER BY `Links` DESC,`Moves` DESC LIMIT 5";//"SELECT `id` FROM `npc` WHERE `name`='"+NPCname+"'";
+		dbCommand.CommandText="SELECT `Player`,`Links`,`Moves` FROM `Records` ORDER BY `Links` DESC,`Moves` ASC LIMIT 5";//"SELECT `id` FROM `npc` WHERE `name`='"+NPCname+"'";
 		IDataReader dbReader=dbCommand.ExecuteReader();   
 		while( dbReader.Read()){
 			//Debug.Log(dbReader.GetString(0));
