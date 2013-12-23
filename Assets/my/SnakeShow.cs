@@ -1,8 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
-using Mono.Data.SqliteClient;
 
 public enum SnakeState
 {
@@ -52,6 +50,8 @@ public class SnakeShow : MonoBehaviour {
 	public AudioClip soundMove;
 	public AudioClip soundSwallow;
 	public AudioClip soundGameOver;
+	
+	public string RecordsSceneName;
 	
 	void AddTile(int LinkIndex, int TileIndex)
 	{
@@ -284,24 +284,8 @@ public class SnakeShow : MonoBehaviour {
 			CurrentDirection = Direction.Right;
 	}
 	
-	private string dbPath;
-	private IDbConnection dbConnection;
-	private IDbCommand dbCommand;
-	private IDataReader dbReader;
-	
-	void TestDB()
+	void SwitchToRecords()
 	{
-		dbPath = "URI=file:"+ Application.dataPath + "/StreamingAssets/SnakeGameDatabase2.bytes";
-		//Debug.Log(dbPath);
-		dbConnection=new SqliteConnection(dbPath);
-		dbConnection.Open();
-		//Debug.Log(dbConnection.State);
-		dbCommand=dbConnection.CreateCommand();
-		dbCommand.CommandText="SELECT `Player` FROM `Records`";//"SELECT `id` FROM `npc` WHERE `name`='"+NPCname+"'";
-		dbReader=dbCommand.ExecuteReader();   
-		while( dbReader.Read()){
-			Debug.Log(dbReader.GetString(0));
-		}
-		dbConnection.Close();
+		Application.LoadLevel(RecordsSceneName);
 	}
 }
