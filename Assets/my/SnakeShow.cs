@@ -50,7 +50,7 @@ public class SnakeShow : MonoBehaviour {
 	
 	public AudioClip soundMove;
 	public AudioClip soundSwallow;
-	public AudioClip soundGameOver;
+	public AudioClip soundPause;
 	
 	public string RecordEnterSceneName;
 	public string RecordsViewSceneName;
@@ -239,7 +239,9 @@ public class SnakeShow : MonoBehaviour {
 			}
 			else //game over
 			{
-				AudioSource.PlayClipAtPoint(soundGameOver, transform.position);
+				GameObject go = GameObject.Find("DestroySound");
+				ObjectSaver os = go.GetComponent<ObjectSaver>();
+				os.PlayGameOver();
 				Links.RemoveAt(0);
 				Debug.Log("GAME OVER! Links: " + Links.Count + " Moves: " + MovesCounter);
 				CurrentState = SnakeState.Death;

@@ -7,9 +7,8 @@
           <Node name="Assembly-CSharp" expanded="True">
             <Node name="Assets" expanded="True">
               <Node name="my" expanded="True">
-                <Node name="AddResult.cs" selected="True" />
+                <Node name="ObjectSaver.cs" selected="True" />
               </Node>
-              <Node name="SQLite" expanded="True" />
             </Node>
           </Node>
         </State>
@@ -17,9 +16,7 @@
     </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore>
-      <Breakpoint file="C:\Dropbox\MY_PROJECTS\Unity 3D\Snake5\Assets\my\AddResult.cs" line="31" />
-    </BreakpointStore>
+    <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
 </Properties>

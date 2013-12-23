@@ -122,6 +122,7 @@
      <Compile Include="Assets\TK2DROOT\tk2d_demo\tk2dDemoReloadController.cs" />
      <Compile Include="Assets\TK2DROOT\tk2d_demo\tk2dDemoRuntimeSpriteController.cs" />
      <Compile Include="Assets\my\AddResult.cs" />
+     <Compile Include="Assets\my\ObjectSaver.cs" />
      <Compile Include="Assets\my\ShowRecords.cs" />
      <Compile Include="Assets\my\SnakeShow.cs" />
      <None Include="Assets\TK2DROOT\tk2d\Shaders\LitSolidVertexColor.shader" />
